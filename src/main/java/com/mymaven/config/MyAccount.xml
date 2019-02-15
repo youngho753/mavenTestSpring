@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="com.mymaven.config.MyAccount.xml">
 	
-	<sql id="searchWhere"> <!-- 중복되는 sql문을 하나로 정의해서 중복을 피하도록 만들어 준다 -->
+	<sql id="searchWhere"><!--  중복되는 sql문을 하나로 정의해서 중복을 피하도록 만들어 준다 -->
 	<where>
 			<if test="word != null and field=='name'">
 			name like '%'||#{word}||'%'
@@ -30,7 +30,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	<!-- 검색하기 -->
 	<select id = "search" parameterType="java.util.Map" resultType ="mvo">
-		select * from springmember  <include refid="searchWhere"/>
+		select * from (select rownum rnum,aa.* from
+		(select * from springmember <include refid="searchWhere"/>) aa)
+		where rnum>=${startRow} and rnum &lt;=${endRow}
+	
+		<!-- select * from springmember  <include refid="searchWhere"/> -->
 	</select>
 	<!-- 상세보기 -->
 	<select id = "detail" parameterType="String" resultType = "mvo">
@@ -47,6 +51,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- count -->
 	<select id = "getMember" resultType="Integer">
 		select count(id) from springmember
+	</select>
+	<select id = "getSelectMemeber" resultType="Integer">
+		select count(id) from springmember <include refid="searchWhere"/>
 	</select>
 </mapper>
 	

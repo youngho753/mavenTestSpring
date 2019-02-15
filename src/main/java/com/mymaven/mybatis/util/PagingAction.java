@@ -4,8 +4,9 @@ import org.springframework.stereotype.Component;
 
 @Component("page")
 public class PagingAction {
-	public String paging(int count,int pageSize,int currentPage) {
-
+	public String paging(int count,int pageSize,int currentPage,String word) {
+		if(word==null)word="";
+		
 		int pageCount = count/pageSize+(count%pageSize==0?0:1);
 		int pageBlock = 3;
 		int startPage = ((currentPage-1)/pageBlock)*pageBlock+1;
@@ -15,7 +16,9 @@ public class PagingAction {
 
 		if(count > 0) {
 			if(startPage>pageBlock) {
-				sb.append("<a href=list?pageNum=");
+				sb.append("<a href=list?word=");
+				sb.append((word));
+				sb.append(",pageNum=");
 				sb.append((startPage-pageBlock));
 				sb.append(">[이전]</a>");
 			}
@@ -24,12 +27,16 @@ public class PagingAction {
 				if(i==currentPage) {
 					sb.append("["+i+"]");
 				}else {
-					sb.append("<a href=list?pageNum=");
+					sb.append("<a href=list?word=");
+					sb.append((word));
+					sb.append(",pageNum=");
 					sb.append((i));
 					sb.append(">["+i+"]</a>");
 				}
 				if(endPage<pageCount) {
-					sb.append("<a href=list?pageNum=");
+					sb.append("<a href=list?word=");
+					sb.append((word));
+					sb.append(",pageNum=");
 					sb.append((startPage+pageBlock));
 					sb.append(">[다음]</a>");
 				}

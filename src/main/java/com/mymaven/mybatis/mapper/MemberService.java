@@ -53,4 +53,7 @@ public class MemberService {
 	public int getCount() {
 		return mDao.getCount("getMember");
 	}
+	public int getSelectCount() {
+		return mDao.getCount("getSelectMemeber");
+	}
 }

@@ -65,9 +65,17 @@ public class HomeController {
 
 	/* 전체보기 */
 	@RequestMapping("list")
-	public String list(Model model,String pageNum) {
+	public String list(Model model,String pageNum,String word,String field) {
 		int pageSize = 5;
 		if(pageNum==null)pageNum="1";
+		if(word==null)
+			word="";
+		else {
+			model.addAttribute("pageNum",pageNum);
+			model.addAttribute("word",word);
+			model.addAttribute("field",field);
+			return "redirect:search";
+		}
 		int currentPage = Integer.parseInt(pageNum);
 		
 		int count = mService.getCount();
@@ -79,7 +87,7 @@ public class HomeController {
 		hm.put("endRow",endRow);
 		
 		List<MemberVO> userList = mService.list(hm);
-		String pageHtml = page.paging(count,pageSize,currentPage);
+		String pageHtml = page.paging(count,pageSize,currentPage,"");
 		model.addAttribute("userList",userList);
 		model.addAttribute("count",count);
 		model.addAttribute("pageHtml",pageHtml);
@@ -111,11 +119,27 @@ public class HomeController {
 	
 	/* 검색하기 */
 	@RequestMapping("search")
-	public String search(Model model,String word,String field) {
+	public String search(Model model,String word,String field,String pageNum) {
+		int pageSize = 5;
+		if(pageNum==null)pageNum="1";
+		int currentPage = Integer.parseInt(pageNum);
+		int count = mService.getSelectCount();
+		int startRow=(currentPage-1)*pageSize+1;
+		int endRow = startRow+pageSize-1;
+		if(endRow>count)endRow = count;
+		
+		
 		HashMap<String, String> map = new HashMap<>();
+		
 		map.put("word",word);
 		map.put("field",field);
+		map.put("startRow",startRow+"");
+		map.put("endRow",endRow+"");
+		String pageHtml = page.paging(count,pageSize,currentPage,word);
 		model.addAttribute("userList",mService.search(map));
+		model.addAttribute("pageHtml",pageHtml);
+		model.addAttribute("word",word);
+		model.addAttribute("pageNum",pageNum);
 		return "list";
 	}
 	
