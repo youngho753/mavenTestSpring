@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- <bean id = "dataSource" class = "org.springframework.beans.config.PropertyPlaceholderConfigurer" -->
+	<bean class = "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name = "locations" value = "classpath:jdbc.properties"/>
+	</bean>
+	
+	<!-- dbsetting -->
+	<bean id = "dataSource" class = "org.springframework.jdbc.datasource.SimpleDriverDataSource">
+	<property name = "driverClass" value = "${driver}"></property>
+	<property name = "url" value = "${url}"></property>
+	<property name = "username" value = "${username}"></property>
+	<property name = "password" value = "${password}"></property>
+	</bean>
+	
+	<bean id = "sqlSessionFactoryBean" class = "org.mybatis.spring.SqlSessionFactoryBean">
+	<property name="dataSource" ref = "dataSource"/>
+	<property name="configLocation" value = "classpath:/com/mymaven/config/Configuration.xml"/>
+	<property name="mapperLocations" value = "classpath:/com/mymaven/config/MyAccount.xml"></property>
+	</bean>
+	
+	<!-- <bean id = "sqlMapper" class = "org.mybatis.spring.SqlSessionTemplate">
+	<constructor-arg index = "0" ref = "sqlSessionFactoryBean"/>
+	</bean> -->
+	
+	<bean id = "sqlMapper" class = "org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name = "sqlSessionFactory" ref = "sqlSessionFactoryBean"/>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/> 
+	
+</beans>
+

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mymaven.config.MyAccount.xml">
+	
+	<sql id="searchWhere"> <!-- 중복되는 sql문을 하나로 정의해서 중복을 피하도록 만들어 준다 -->
+	<where>
+			<if test="word != null and field=='name'">
+			name like '%'||#{word}||'%'
+			</if>
+			
+			<if test="word != null and field=='id'">
+			id like '%${word}%'
+			</if>
+		</where>
+	</sql>
+
+
+	<insert id = "insertMember" parameterType="mvo">
+		insert into springmember(id,name,password,addr,memo,reg_date) 
+		values(#{id},#{name},#{password},#{addr},#{memo},sysdate)
+	</insert>
+	<!-- 전체보기 -->
+	<select id = "selectMember" parameterType="java.util.Map" resultType="mvo">
+		select * from (select rownum rnum,aa.* from
+		(select * from springmember ) aa)
+		where rnum>=${startRow} and rnum &lt;=${endRow}
+	</select>
+	<!-- 검색하기 -->
+	<select id = "search" parameterType="java.util.Map" resultType ="mvo">
+		select * from springmember  <include refid="searchWhere"/>
+	</select>
+	<!-- 상세보기 -->
+	<select id = "detail" parameterType="String" resultType = "mvo">
+		select * from springmember where id = #{id}
+	</select>
+	<!-- 수정하기 -->
+	<update id = "updateMember" parameterType="mvo">
+		update springmember set name=#{name},password=#{password},addr=#{addr},memo=#{memo} where id = #{id}
+	</update>
+	<!-- 삭제하기 -->
+	<delete id = "deleteMember" parameterType="String">
+		delete from springmember where id = #{id}
+	</delete>
+	<!-- count -->
+	<select id = "getMember" resultType="Integer">
+		select count(id) from springmember
+	</select>
+</mapper>
+	
